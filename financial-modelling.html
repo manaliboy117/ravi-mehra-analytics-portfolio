@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Modelling Lab | Ravi Mehra</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#0b1120;color:#e5e7eb;line-height:1.6}
+header{padding:28px 20px;background:#111c31;border-bottom:1px solid #293750}
+header h1{margin:0;color:#67e8f9;font-size:27px}
+header p{color:#a9b8ce}
+main{max-width:1000px;margin:auto;padding:20px}
+.panel{background:#131f33;border:1px solid #293750;border-radius:14px;padding:20px;margin:18px 0}
+h2{color:#67e8f9;font-size:20px}
+label{display:block;margin-top:15px}
+input{width:100%;margin-top:7px;padding:12px;border-radius:8px;border:1px solid #41516a;background:#0b1120;color:white;font-size:16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.stat{background:#0b1120;border-radius:10px;padding:16px}
+.stat span{display:block;color:#9caec5;font-size:13px}
+.stat strong{font-size:23px;color:#67e8f9;overflow-wrap:anywhere}
+button{background:#0891b2;color:white;border:0;padding:12px 18px;border-radius:8px;margin-top:18px;font-size:15px}
+footer{text-align:center;padding:25px;color:#94a3b8}
+</style>
+</head>
+<body>
+<header>
+<h1>Financial Modelling Lab</h1>
+<p>Interactive Forecasting & Business Analysis | Ravi Mehra</p>
+</header>
+<main>
+<section class="panel">
+<h2>1. Business Assumptions</h2>
+<p>Adjust the inputs to explore how sales, costs and investment affect business performance.</p>
+<label>Monthly Revenue (₹)
+<input id="revenue" type="number" min="0" value="500000">
+</label>
+<label>Monthly Operating Costs (₹)
+<input id="costs" type="number" min="0" value="320000">
+</label>
+<label>Initial Investment (₹)
+<input id="investment" type="number" min="0" value="1500000">
+</label>
+<label>Expected Monthly Revenue Growth (%)
+<input id="growth" type="number" min="-100" max="100" step="0.5" value="2">
+</label>
+<button onclick="calculate()">Update Forecast</button>
+</section>
+<section class="panel">
+<h2>2. Financial Results</h2>
+<div class="stats">
+<div class="stat"><span>Monthly Profit</span><strong id="profit">—</strong></div>
+<div class="stat"><span>Profit Margin</span><strong id="margin">—</strong></div>
+<div class="stat"><span>Annual Profit (Simple Estimate)</span><strong id="annual">—</strong></div>
+<div class="stat"><span>Estimated Payback</span><strong id="payback">—</strong></div>
+</div>
+</section>
+<section class="panel">
+<h2>3. Twelve-Month Forecast</h2>
+<div class="stats">
+<div class="stat"><span>Projected Annual Revenue</span><strong id="forecastRevenue">—</strong></div>
+<div class="stat"><span>Projected Annual Profit</span><strong id="forecastProfit">—</strong></div>
+</div>
+<p id="note">Change the assumptions to update the model.</p>
+</section>
+<section class="panel">
+<h2>4. Business Interpretation</h2>
+<p id="insight">Your analysis will appear here.</p>
+<p><b>Tools and concepts:</b> Financial modelling, scenario analysis, forecasting, profitability, payback analysis and business intelligence.</p>
+<p><b>Model limitation:</b> This is an illustrative planning tool, not investment advice. It excludes taxes, financing costs, working capital, seasonality and changes in operating expenses.</p>
+</section>
+</main>
+<footer>Created by Ravi Mehra | Analytics & Finance Portfolio</footer>
+<script>
+function money(n){
+return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+}
+function calculate(){
+const r=Math.max(0,Number(document.getElementById('revenue').value)||0);
+const c=Math.max(0,Number(document.getElementById('costs').value)||0);
+const inv=Math.max(0,Number(document.getElementById('investment').value)||0);
+const g=Math.max(-100,Math.min(100,Number(document.getElementById('growth').value)||0))/100;
+const p=r-c;
+document.getElementById('profit').textContent=money(p);
+document.getElementById('margin').textContent=(r?(p/r*100):0).toFixed(1)+'%';
+document.getElementById('annual').textContent=money(p*12);
+document.getElementById('payback').textContent=p>0?(inv/p).toFixed(1)+' months':'Not available';
+let totalR=0,totalP=0;
+for(let m=0;m<12;m++){
+const rm=r*Math.pow(1+g,m);
+totalR+=rm;
+totalP+=rm-c;
+}
+document.getElementById('forecastRevenue').textContent=money(totalR);
+document.getElementById('forecastProfit').textContent=money(totalP);
+document.getElementById('note').textContent='Forecast assumes monthly operating costs remain constant and revenue grows at the selected rate.';
+document.getElementById('insight').textContent=p>0?'The business is profitable under the current assumptions. Review the growth rate, operating costs and payback period before making decisions.':p===0?'Revenue currently equals operating costs. The business needs higher revenue or lower costs to generate operating profit.':'Operating costs exceed revenue. Explore cost reductions or realistic revenue improvements.';
+}
+calculate();
+</script>
+</body>
+</html>
